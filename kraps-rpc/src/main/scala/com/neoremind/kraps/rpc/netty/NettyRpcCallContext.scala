@@ -1,13 +1,12 @@
 package com.neoremind.kraps.rpc.netty
 
-import scala.concurrent.Promise
+import com.neoremind.kraps.rpc.{RpcAddress, RpcCallContext}
 
-import org.apache.spark.internal.Logging
+import scala.concurrent.Promise
 import org.apache.spark.network.client.RpcResponseCallback
-import org.apache.spark.rpc.{RpcAddress, RpcCallContext}
 
 private[netty] abstract class NettyRpcCallContext(override val senderAddress: RpcAddress)
-  extends RpcCallContext with Logging {
+  extends RpcCallContext {
 
   protected def send(message: Any): Unit
 
@@ -35,7 +34,7 @@ private[netty] class LocalNettyRpcCallContext(
 }
 
 /**
-  * A [[RpcCallContext]] that will call [[RpcResponseCallback]] to send the reply back.
+  * A [[com.neoremind.kraps.rpc.RpcCallContext]] that will call [[RpcResponseCallback]] to send the reply back.
   */
 private[netty] class RemoteNettyRpcCallContext(
                                                 nettyEnv: NettyRpcEnv,

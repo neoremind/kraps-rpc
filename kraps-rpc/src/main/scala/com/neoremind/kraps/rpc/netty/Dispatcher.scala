@@ -3,20 +3,22 @@ package com.neoremind.kraps.rpc.netty
 import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap, LinkedBlockingQueue, ThreadPoolExecutor, TimeUnit}
 import javax.annotation.concurrent.GuardedBy
 
+import com.neoremind.kraps.RpcException
+import com.neoremind.kraps.rpc.{RpcEndpoint, RpcEndpointAddress, RpcEndpointRef, RpcEnvStoppedException}
+import com.neoremind.kraps.util.ThreadUtils
+
 import scala.collection.JavaConverters._
 import scala.concurrent.Promise
 import scala.util.control.NonFatal
-
-import org.apache.spark.SparkException
-import org.apache.spark.internal.Logging
 import org.apache.spark.network.client.RpcResponseCallback
-import org.apache.spark.rpc._
-import org.apache.spark.util.ThreadUtils
+import org.slf4j.LoggerFactory
 
 /**
   * A message dispatcher, responsible for routing RPC messages to the appropriate endpoint(s).
   */
-private[netty] class Dispatcher(nettyEnv: NettyRpcEnv) extends Logging {
+private[netty] class Dispatcher(nettyEnv: NettyRpcEnv) {
+
+  private val log = LoggerFactory.getLogger(classOf[Dispatcher])
 
   private class EndpointData(
                               val name: String,
@@ -52,7 +54,7 @@ private[netty] class Dispatcher(nettyEnv: NettyRpcEnv) extends Logging {
       }
       val data = endpoints.get(name)
       endpointRefs.put(data.endpoint, data.ref)
-      receivers.offer(data)  // for the OnStart message
+      receivers.offer(data) // for the OnStart message
     }
     endpointRef
   }
@@ -66,7 +68,7 @@ private[netty] class Dispatcher(nettyEnv: NettyRpcEnv) extends Logging {
     val data = endpoints.remove(name)
     if (data != null) {
       data.inbox.stop()
-      receivers.offer(data)  // for the OnStop message
+      receivers.offer(data) // for the OnStop message
     }
     // Don't clean `endpointRefs` here because it's possible that some messages are being processed
     // now and they can use `getRpcEndpointRef`. So `endpointRefs` will be cleaned in Inbox via
@@ -92,7 +94,7 @@ private[netty] class Dispatcher(nettyEnv: NettyRpcEnv) extends Logging {
     val iter = endpoints.keySet().iterator()
     while (iter.hasNext) {
       val name = iter.next
-      postMessage(name, message, (e) => logWarning(s"Message $message dropped. ${e.getMessage}"))
+      postMessage(name, message, (e) => log.warn(s"Message $message dropped. ${e.getMessage}"))
     }
   }
 
@@ -121,8 +123,8 @@ private[netty] class Dispatcher(nettyEnv: NettyRpcEnv) extends Logging {
   /**
     * Posts a message to a specific endpoint.
     *
-    * @param endpointName name of the endpoint.
-    * @param message the message to post
+    * @param endpointName      name of the endpoint.
+    * @param message           the message to post
     * @param callbackIfStopped callback function if the endpoint is stopped.
     */
   private def postMessage(
@@ -134,7 +136,7 @@ private[netty] class Dispatcher(nettyEnv: NettyRpcEnv) extends Logging {
       if (stopped) {
         Some(new RpcEnvStoppedException())
       } else if (data == null) {
-        Some(new SparkException(s"Could not find $endpointName."))
+        Some(new RpcException(s"Could not find $endpointName."))
       } else {
         data.inbox.post(message)
         receivers.offer(data)
@@ -195,7 +197,7 @@ private[netty] class Dispatcher(nettyEnv: NettyRpcEnv) extends Logging {
             }
             data.inbox.process(Dispatcher.this)
           } catch {
-            case NonFatal(e) => logError(e.getMessage, e)
+            case NonFatal(e) => log.error(e.getMessage, e)
           }
         }
       } catch {

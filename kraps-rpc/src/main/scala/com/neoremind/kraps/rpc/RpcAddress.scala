@@ -1,12 +1,12 @@
 package com.neoremind.kraps.rpc
 
-import org.apache.spark.util.Utils
+import com.neoremind.kraps.util.Utils
 
 
 /**
   * Address for an RPC environment, with hostname and port.
   */
-private[spark] case class RpcAddress(host: String, port: Int) {
+case class RpcAddress(host: String, port: Int) {
 
   def hostPort: String = host + ":" + port
 
@@ -17,7 +17,7 @@ private[spark] case class RpcAddress(host: String, port: Int) {
 }
 
 
-private[spark] object RpcAddress {
+object RpcAddress {
 
   /** Return the [[RpcAddress]] represented by `uri`. */
   def fromURIString(uri: String): RpcAddress = {
@@ -27,7 +27,7 @@ private[spark] object RpcAddress {
 
   /** Returns the [[RpcAddress]] encoded in the form of "spark://host:port" */
   def fromSparkURL(sparkUrl: String): RpcAddress = {
-    val (host, port) = Utils.extractHostPortFromSparkUrl(sparkUrl)
+    val (host, port) = Utils.extractHostPortFromKrapsUrl(sparkUrl)
     RpcAddress(host, port)
   }
 }

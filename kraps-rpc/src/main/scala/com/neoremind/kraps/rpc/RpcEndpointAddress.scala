@@ -1,6 +1,7 @@
 package com.neoremind.kraps.rpc
 
-import org.apache.spark.SparkException
+import com.neoremind.kraps.RpcException
+
 
 /**
   * An address identifier for an RPC endpoint.
@@ -11,7 +12,7 @@ import org.apache.spark.SparkException
   * @param rpcAddress The socket address of the endpoint.
   * @param name Name of the endpoint.
   */
-private[spark] case class RpcEndpointAddress(val rpcAddress: RpcAddress, val name: String) {
+case class RpcEndpointAddress(val rpcAddress: RpcAddress, val name: String) {
 
   require(name != null, "RpcEndpoint name must be provided.")
 
@@ -26,7 +27,7 @@ private[spark] case class RpcEndpointAddress(val rpcAddress: RpcAddress, val nam
   }
 }
 
-private[spark] object RpcEndpointAddress {
+object RpcEndpointAddress {
 
   def apply(host: String, port: Int, name: String): RpcEndpointAddress = {
     new RpcEndpointAddress(host, port, name)
@@ -45,12 +46,12 @@ private[spark] object RpcEndpointAddress {
         (uri.getPath != null && !uri.getPath.isEmpty) || // uri.getPath returns "" instead of null
         uri.getFragment != null ||
         uri.getQuery != null) {
-        throw new SparkException("Invalid Spark URL: " + sparkUrl)
+        throw new RpcException("Invalid URL: " + sparkUrl)
       }
       new RpcEndpointAddress(host, port, name)
     } catch {
       case e: java.net.URISyntaxException =>
-        throw new SparkException("Invalid Spark URL: " + sparkUrl, e)
+        throw new RpcException("Invalid URL: " + sparkUrl, e)
     }
   }
 }

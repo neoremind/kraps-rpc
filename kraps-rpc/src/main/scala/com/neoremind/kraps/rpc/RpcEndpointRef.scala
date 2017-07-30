@@ -1,17 +1,18 @@
 package com.neoremind.kraps.rpc
 
+import com.neoremind.kraps.{RpcConf, RpcException}
+import com.neoremind.kraps.util.RpcUtils
+
 import scala.concurrent.Future
 import scala.reflect.ClassTag
-
-import org.apache.spark.{SparkConf, SparkException}
-import org.apache.spark.internal.Logging
-import org.apache.spark.util.RpcUtils
+import org.slf4j.LoggerFactory
 
 /**
   * A reference for a remote [[RpcEndpoint]]. [[RpcEndpointRef]] is thread-safe.
   */
-private[spark] abstract class RpcEndpointRef(conf: SparkConf)
-  extends Serializable with Logging {
+abstract class RpcEndpointRef(conf: RpcConf) extends Serializable  {
+
+  private val log = LoggerFactory.getLogger(classOf[RpcEndpointRef])
 
   private[this] val maxRetries = RpcUtils.numRetries(conf)
   private[this] val retryWaitMs = RpcUtils.retryWaitMs(conf)
@@ -47,7 +48,7 @@ private[spark] abstract class RpcEndpointRef(conf: SparkConf)
 
   /**
     * Send a message to the corresponding [[RpcEndpoint]] and get its result within a default
-    * timeout, or throw a SparkException if this fails even after the default number of retries.
+    * timeout, or throw a RpcException if this fails even after the default number of retries.
     * The default `timeout` will be used in every trial of calling `sendWithReply`. Because this
     * method retries, the message handling in the receiver side should be idempotent.
     *
@@ -62,7 +63,7 @@ private[spark] abstract class RpcEndpointRef(conf: SparkConf)
 
   /**
     * Send a message to the corresponding [[RpcEndpoint.receive]] and get its result within a
-    * specified timeout, throw a SparkException if this fails even after the specified number of
+    * specified timeout, throw a RpcException if this fails even after the specified number of
     * retries. `timeout` will be used in every trial of calling `sendWithReply`. Because this method
     * retries, the message handling in the receiver side should be idempotent.
     *
@@ -84,14 +85,14 @@ private[spark] abstract class RpcEndpointRef(conf: SparkConf)
         val future = ask[T](message, timeout)
         val result = timeout.awaitResult(future)
         if (result == null) {
-          throw new SparkException("RpcEndpoint returned null")
+          throw new RpcException("RpcEndpoint returned null")
         }
         return result
       } catch {
         case ie: InterruptedException => throw ie
         case e: Exception =>
           lastException = e
-          logWarning(s"Error sending message [message = $message] in $attempts attempts", e)
+          log.warn(s"Error sending message [message = $message] in $attempts attempts", e)
       }
 
       if (attempts < maxRetries) {
@@ -99,7 +100,7 @@ private[spark] abstract class RpcEndpointRef(conf: SparkConf)
       }
     }
 
-    throw new SparkException(
+    throw new RpcException(
       s"Error sending message [message = $message]", lastException)
   }
 

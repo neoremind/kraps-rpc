@@ -48,6 +48,24 @@
             <version>${scala.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>15.0</version>
+        </dependency>
+
         <!-- test dependencies -->
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -87,7 +105,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- spark -->
+            <!-- spark network -->
             <dependency>
                 <groupId>org.apache.spark</groupId>
                 <artifactId>spark-network-common_2.11</artifactId>

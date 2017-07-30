@@ -1,6 +1,6 @@
 package com.neoremind.kraps.rpc
 
-import org.apache.spark.SparkException
+import com.neoremind.kraps.RpcException
 
 private[rpc] class RpcEndpointNotFoundException(uri: String)
-  extends SparkException(s"Cannot find endpoint: $uri")
+  extends RpcException(s"Cannot find endpoint: $uri")
