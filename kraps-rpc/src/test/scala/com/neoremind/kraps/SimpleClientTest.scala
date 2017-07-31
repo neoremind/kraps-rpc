@@ -10,7 +10,7 @@ import scala.concurrent.{Await, Future}
 /**
   * Created by xu.zhang on 7/23/17.
   */
-object RpcClientTest {
+object SimpleClientTest {
 
   def main(args: Array[String]): Unit = {
     val config = RpcEnvClientConfig(new RpcConf(), "hello-client")

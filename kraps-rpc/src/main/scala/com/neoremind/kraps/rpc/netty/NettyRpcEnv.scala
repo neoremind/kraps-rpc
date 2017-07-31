@@ -28,7 +28,7 @@ class NettyRpcEnv(
 
   private val log = LoggerFactory.getLogger(classOf[NettyRpcEnv])
 
-  private[netty] val transportConf = TransportConf.fromKrapsConf(
+  private[netty] val transportConf = KrapsTransportConf.fromSparkConf(
     conf.set("spark.rpc.io.numConnectionsPerPeer", "1"),
     "rpc",
     conf.getInt("spark.rpc.io.threads", 0))

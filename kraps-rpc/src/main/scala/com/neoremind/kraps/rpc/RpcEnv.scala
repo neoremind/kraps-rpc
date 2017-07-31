@@ -1,31 +1,9 @@
 package com.neoremind.kraps.rpc
 
-import java.io.File
-import java.nio.channels.ReadableByteChannel
-
 import com.neoremind.kraps.RpcConf
-import com.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
 import com.neoremind.kraps.util.RpcUtils
 
 import scala.concurrent.Future
-
-
-/**
-  * A RpcEnv implementation must have a [[RpcEnvFactory]] implementation with an empty constructor
-  * so that it can be created via Reflection.
-  */
-object RpcEnv {
-
-  def create(
-              name: String,
-              host: String,
-              port: Int,
-              conf: RpcConf,
-              clientMode: Boolean = false): RpcEnv = {
-    create(name, host, port, conf, clientMode)
-  }
-}
-
 
 /**
   * An RPC environment. [[RpcEndpoint]]s need to register itself with a name to [[RpcEnv]] to
