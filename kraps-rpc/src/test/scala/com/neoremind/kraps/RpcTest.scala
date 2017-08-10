@@ -1,10 +1,14 @@
 package com.neoremind.kraps
 
+import java.util.concurrent.TimeUnit
+
 import com.neoremind.kraps.rpc._
 import com.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.Logger
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 import scala.util.Try
 
 /**
@@ -89,14 +93,14 @@ class SimpleRpcTest extends BaseRpcTest {
 
     def runBlock(endPointRef: RpcEndpointRef) = endPointRef.ask[String](Say("abc"))
 
-    val thrown = the[RpcTimeoutException] thrownBy clientCall(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock, rpcConf = rpcConf, host = "192.168.1.67")
-    thrown.getMessage should equal("Futures timed out after [2 seconds]. This timeout is controlled by spark.rpc.lookupTimeout")
+    val thrown = the[RpcException] thrownBy clientCall(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock, rpcConf = rpcConf, host = "xxxmm")
+    thrown.getCause.getMessage should equal("Failed to connect to xxxmm:" + _port.get())
   }
 
   "EchoEndpoint" should "client call timeout due to slow response" in {
     val rpcConf = new RpcConf()
     // or "spark.network.timeout"
-    rpcConf.set("spark.rpc.askTimeout", "2s")
+    rpcConf.set("spark.rpc.askTimeout", "3s")
 
     runServerAndAwaitTermination({
       val echoEndpoint: RpcEndpoint = new EchoEndpoint(serverRpcEnv)
@@ -106,7 +110,7 @@ class SimpleRpcTest extends BaseRpcTest {
     def runBlock(endPointRef: RpcEndpointRef) = endPointRef.ask[String](SayTimeout(5000, "abc"))
 
     val thrown = the[RpcTimeoutException] thrownBy clientCall(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock, rpcConf)
-    thrown.getMessage should equal("Cannot receive any reply in 2 seconds. This timeout is controlled by spark.rpc.askTimeout")
+    thrown.getMessage should equal("Cannot receive any reply in 3 seconds. This timeout is controlled by spark.rpc.askTimeout")
   }
 
   "EchoEndpoint" should "client call should retry" in {
@@ -173,6 +177,25 @@ class SimpleRpcTest extends BaseRpcTest {
     // if no receive defined in endpoint
     // there would print out com.neoremind.kraps.RpcException: NettyRpcEndpointRef(spark://my-echo@localhost:52345) does not implement 'receive'
     clientCallNonFuture(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock)
+  }
+
+  /**
+    * RpcEndpointRef is get by the return object of `setupEndpoint`
+    */
+  "EchoEndpoint" should "run locally successfully" in {
+    import scala.concurrent.ExecutionContext.Implicits.global
+
+    val config = RpcEnvServerConfig(new RpcConf(), "hello-server", _host, _port.get())
+    serverRpcEnv = NettyRpcEnvFactory.create(config)
+    val echoEndpoint: RpcEndpoint = new EchoEndpoint(serverRpcEnv)
+    val _endpointRef = serverRpcEnv.setupEndpoint(EchoEndpoint.ENDPOINT_NAME, echoEndpoint)
+    val future: Future[String] = _endpointRef.ask[String](Say("abc"))
+    Await.result(future, Duration.apply(clientCallWaitTimeInSec))
+
+    future onComplete {
+      case scala.util.Success(value) => log.info(s"$value")
+      case scala.util.Failure(e) => log.error("got failure: " + e.getMessage)
+    }
   }
 
 }

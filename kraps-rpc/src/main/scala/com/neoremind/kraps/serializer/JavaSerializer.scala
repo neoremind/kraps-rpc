@@ -9,8 +9,7 @@ import com.neoremind.kraps.util.{ByteBufferInputStream, ByteBufferOutputStream, 
 import scala.reflect.ClassTag
 import org.apache.spark.annotation.DeveloperApi
 
-class JavaSerializationStream(
-                                              out: OutputStream, counterReset: Int, extraDebugInfo: Boolean)
+class JavaSerializationStream(out: OutputStream, counterReset: Int, extraDebugInfo: Boolean)
   extends SerializationStream {
   private val objOut = new ObjectOutputStream(out)
   private var counter = 0
@@ -80,8 +79,7 @@ private object JavaDeserializationStream {
   )
 }
 
-class JavaSerializerInstance(
-                                             counterReset: Int, extraDebugInfo: Boolean, defaultClassLoader: ClassLoader)
+class JavaSerializerInstance(counterReset: Int, extraDebugInfo: Boolean, defaultClassLoader: ClassLoader)
   extends SerializerInstance {
 
   override def serialize[T: ClassTag](t: T): ByteBuffer = {
