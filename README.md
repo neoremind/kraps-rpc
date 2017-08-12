@@ -13,7 +13,25 @@ The module is based on Spark 2.1 version, which eliminate [Akka](http://akka.io/
 
 ## 0 Dependency 
 
+You can configure you project by including dependency from below, currently only work with scala 2.11.
 
+Maven:
+
+```
+<dependency>
+    <groupId>com.neoremind</groupId>
+    <artifactId>kraps-rpc_2.11</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+SBT:
+
+```
+"com.neoremind" % "kraps-rpc_2.11" % "1.0.0"
+```
+
+More depencencies please go to *Dependency tree* section.
 
 ## 1 How to run  
 
@@ -163,7 +181,33 @@ rpcConf.set("spark.rpc.serialization.stream.factory", "com.neoremind.kraps.seria
 
 Please visit [Test cases]() 
 
-### 4. Ackownledgement
+## 4. Dependency tree
+
+```
+[INFO] +- org.apache.spark:spark-network-common_2.11:jar:2.1.0:compile
+[INFO] |  +- io.netty:netty-all:jar:4.0.42.Final:compile
+[INFO] |  +- org.apache.commons:commons-lang3:jar:3.5:compile
+[INFO] |  +- org.fusesource.leveldbjni:leveldbjni-all:jar:1.8:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.6.5:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.6.5:compile
+[INFO] |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  +- org.apache.spark:spark-tags_2.11:jar:2.1.0:compile
+[INFO] |  \- org.spark-project.spark:unused:jar:1.0.0:compile
+[INFO] +- de.ruedigermoeller:fst:jar:2.50:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-core:jar:2.8.8:compile
+[INFO] |  +- org.javassist:javassist:jar:3.21.0-GA:compile
+[INFO] |  +- org.objenesis:objenesis:jar:2.5.1:compile
+[INFO] |  \- com.cedarsoftware:java-util:jar:1.9.0:compile
+[INFO] |     +- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |     \- com.cedarsoftware:json-io:jar:2.5.1:compile
+[INFO] +- org.scala-lang:scala-library:jar:2.11.8:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.7:compile
+[INFO] +- org.slf4j:slf4j-log4j12:jar:1.7.7:compile
+[INFO] |  \- log4j:log4j:jar:1.2.17:compile
+[INFO] +- com.google.guava:guava:jar:15.0:compile
+```
+
+### 5. Ackownledgement
 
 The development of Kraps-rpc is inspired by Spark. Kraps-rpc with Apache2.0 Open Source License retains all copyright, trademark, author’s information from Spark.
 
