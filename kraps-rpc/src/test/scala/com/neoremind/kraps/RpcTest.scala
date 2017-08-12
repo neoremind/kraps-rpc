@@ -243,7 +243,6 @@ class EchoEndpoint(realRpcEnv: RpcEnv)(implicit log: Logger) extends ThreadSafeR
   }
 
   override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
-    // Messages sent and received locally
     case Say(msg) => {
       log.info(s"server received $msg")
       msg match {
