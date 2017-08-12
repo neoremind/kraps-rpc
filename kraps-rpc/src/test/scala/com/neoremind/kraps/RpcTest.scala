@@ -1,7 +1,6 @@
 package com.neoremind.kraps
 
 import java.io.{Externalizable, ObjectInput, ObjectOutput}
-import java.util.concurrent.TimeUnit
 
 import com.neoremind.kraps.rpc._
 import com.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
@@ -190,9 +189,8 @@ class SimpleRpcTest extends BaseRpcTest {
       case scala.util.Failure(e) => log.error("got failure: " + e.getMessage)
     }
 
-    // if no receive defined in endpoint
-    // there would print out com.neoremind.kraps.RpcException: NettyRpcEndpointRef(spark://my-echo@localhost:52345) does not implement 'receive'
     clientCallNonFuture(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock)
+    Thread.sleep(3000)
   }
 
   /**

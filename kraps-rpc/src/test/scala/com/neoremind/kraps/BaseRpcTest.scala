@@ -32,7 +32,7 @@ abstract class BaseRpcTest extends FlatSpec with BeforeAndAfter with Matchers {
     }
     _port.incrementAndGet()
     log.info("======================================")
-    Thread.sleep(500)
+    Thread.sleep(200)
   }
 
   val startedCountDownLatch = new CountDownLatch(1)
