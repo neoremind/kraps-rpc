@@ -1,6 +1,5 @@
 # kraps-rpc
 [![Build Status](https://travis-ci.org/neoremind/kraps-rpc.svg?branch=master)](https://travis-ci.org/neoremind/kraps-rpc)
-[![Coverage Status](https://coveralls.io/repos/github/neoremind/kraps-rpc/badge.svg?branch=master)](https://coveralls.io/github/neoremind/kraps-rpc?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.neoremind/kraps-rpc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.neoremind/kraps-rpc)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
