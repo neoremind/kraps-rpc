@@ -1,8 +1,8 @@
-package com.neoremind.kraps.util
+package net.neoremind.kraps.util
 
 
-import com.neoremind.kraps.RpcConf
-import com.neoremind.kraps.rpc.{RpcAddress, RpcEndpointRef, RpcEnv, RpcTimeout}
+import net.neoremind.kraps.RpcConf
+import net.neoremind.kraps.rpc.{RpcAddress, RpcEndpointRef, RpcEnv, RpcTimeout}
 
 object RpcUtils {
 

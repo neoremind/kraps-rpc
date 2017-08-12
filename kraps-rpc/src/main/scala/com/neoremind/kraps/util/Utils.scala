@@ -1,9 +1,9 @@
-package com.neoremind.kraps.util
+package net.neoremind.kraps.util
 
 import java.io.IOException
 import java.net.BindException
 
-import com.neoremind.kraps.{RpcConf, RpcException}
+import net.neoremind.kraps.{RpcConf, RpcException}
 import io.netty.channel.unix.Errors.NativeIoException
 import org.apache.spark.network.util.JavaUtils
 import org.slf4j.LoggerFactory

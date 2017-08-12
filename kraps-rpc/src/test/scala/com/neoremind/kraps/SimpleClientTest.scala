@@ -1,7 +1,7 @@
-package com.neoremind.kraps
+package net.neoremind.kraps
 
-import com.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
-import com.neoremind.kraps.rpc._
+import net.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
+import net.neoremind.kraps.rpc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration

@@ -1,13 +1,13 @@
-package com.neoremind.kraps.rpc
+package net.neoremind.kraps.rpc
 
 import java.util.concurrent.TimeoutException
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
-import com.neoremind.kraps.RpcConf
-import com.neoremind.kraps.RpcException
-import com.neoremind.kraps.util.Utils
+import net.neoremind.kraps.RpcConf
+import net.neoremind.kraps.RpcException
+import net.neoremind.kraps.util.Utils
 
 /**
   * An exception thrown if RpcTimeout modifies a [[TimeoutException]].

@@ -1,11 +1,11 @@
-package com.neoremind.kraps.rpc.netty
+package net.neoremind.kraps.rpc.netty
 
 import java.nio.ByteBuffer
 import java.util.concurrent.Callable
 import javax.annotation.concurrent.GuardedBy
 
-import com.neoremind.kraps.RpcException
-import com.neoremind.kraps.rpc.{RpcAddress, RpcEnvStoppedException}
+import net.neoremind.kraps.RpcException
+import net.neoremind.kraps.rpc.{RpcAddress, RpcEnvStoppedException}
 import org.apache.spark.network.client.{RpcResponseCallback, TransportClient}
 import org.slf4j.LoggerFactory
 
@@ -98,7 +98,7 @@ private[netty] class Outbox(nettyEnv: NettyRpcEnv, val address: RpcAddress) {
 
   /**
     * Send a message. If there is no active connection, cache it and launch a new connection. If
-    * [[Outbox]] is stopped, the sender will be notified with a [[com.neoremind.kraps.RpcException]].
+    * [[Outbox]] is stopped, the sender will be notified with a [[net.neoremind.kraps.RpcException]].
     */
   def send(message: OutboxMessage): Unit = {
     val dropped = synchronized {

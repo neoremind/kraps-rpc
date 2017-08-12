@@ -1,4 +1,4 @@
-package com.neoremind.kraps.rpc.netty
+package net.neoremind.kraps.rpc.netty
 
 import java.io._
 import java.net.{InetSocketAddress, URI}
@@ -7,10 +7,10 @@ import java.util.concurrent._
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.annotation.Nullable
 
-import com.neoremind.kraps.RpcConf
-import com.neoremind.kraps.rpc._
-import com.neoremind.kraps.serializer.{JavaSerializer, JavaSerializerInstance}
-import com.neoremind.kraps.util.{ThreadUtils, Utils}
+import net.neoremind.kraps.RpcConf
+import net.neoremind.kraps.rpc._
+import net.neoremind.kraps.serializer.{JavaSerializer, JavaSerializerInstance}
+import net.neoremind.kraps.util.{ThreadUtils, Utils}
 import org.apache.spark.network.TransportContext
 import org.apache.spark.network.client._
 import org.apache.spark.network.server._

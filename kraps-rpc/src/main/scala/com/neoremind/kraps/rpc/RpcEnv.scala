@@ -1,7 +1,7 @@
-package com.neoremind.kraps.rpc
+package net.neoremind.kraps.rpc
 
-import com.neoremind.kraps.RpcConf
-import com.neoremind.kraps.util.RpcUtils
+import net.neoremind.kraps.RpcConf
+import net.neoremind.kraps.util.RpcUtils
 
 import scala.concurrent.Future
 

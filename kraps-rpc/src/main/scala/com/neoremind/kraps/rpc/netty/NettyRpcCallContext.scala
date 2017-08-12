@@ -1,6 +1,6 @@
-package com.neoremind.kraps.rpc.netty
+package net.neoremind.kraps.rpc.netty
 
-import com.neoremind.kraps.rpc.{RpcAddress, RpcCallContext}
+import net.neoremind.kraps.rpc.{RpcAddress, RpcCallContext}
 
 import scala.concurrent.Promise
 import org.apache.spark.network.client.RpcResponseCallback
@@ -34,7 +34,7 @@ private[netty] class LocalNettyRpcCallContext(
 }
 
 /**
-  * A [[com.neoremind.kraps.rpc.RpcCallContext]] that will call [[RpcResponseCallback]] to send the reply back.
+  * A [[net.neoremind.kraps.rpc.RpcCallContext]] that will call [[RpcResponseCallback]] to send the reply back.
   */
 private[netty] class RemoteNettyRpcCallContext(
                                                 nettyEnv: NettyRpcEnv,

@@ -1,4 +1,4 @@
-package com.neoremind.kraps.util
+package net.neoremind.kraps.util
 
 /** Provides a basic/boilerplate Iterator implementation. */
 abstract class NextIterator[U] extends Iterator[U] {

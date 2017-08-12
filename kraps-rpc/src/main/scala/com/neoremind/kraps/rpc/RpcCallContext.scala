@@ -1,4 +1,4 @@
-package com.neoremind.kraps.rpc
+package net.neoremind.kraps.rpc
 
 /**
   * A callback that [[RpcEndpoint]] can use to send back a message or failure. It's thread-safe

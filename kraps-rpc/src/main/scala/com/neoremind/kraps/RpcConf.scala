@@ -1,8 +1,8 @@
-package com.neoremind.kraps
+package net.neoremind.kraps
 
 import java.util.concurrent.ConcurrentHashMap
 
-import com.neoremind.kraps.util.Utils
+import net.neoremind.kraps.util.Utils
 
 import scala.collection.JavaConverters._
 

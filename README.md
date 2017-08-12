@@ -1,6 +1,6 @@
 # kraps-rpc
 [![Build Status](https://travis-ci.org/neoremind/kraps-rpc.svg?branch=master)](https://travis-ci.org/neoremind/kraps-rpc)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.neoremind/kraps-rpc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.neoremind/kraps-rpc)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.neoremind/kraps-rpc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.neoremind/kraps-rpc)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 
@@ -18,7 +18,7 @@ Maven:
 
 ```
 <dependency>
-    <groupId>com.neoremind</groupId>
+    <groupId>net.neoremind</groupId>
     <artifactId>kraps-rpc_2.11</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -27,7 +27,7 @@ Maven:
 SBT:
 
 ```
-"com.neoremind" % "kraps-rpc_2.11" % "1.0.0"
+"net.neoremind" % "kraps-rpc_2.11" % "1.0.0"
 ```
 
 More depencencies please go to *Dependency tree* section.
@@ -80,6 +80,10 @@ There are a couple of steps to create a RPC server which provide `HelloEndpoint`
 4. `awaitTermination` will block the thread and make server run without exiting JVM.
 
 ```
+import net.neoremind.kraps.RpcConf
+import net.neoremind.kraps.rpc._
+import net.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
+
 object HelloworldServer {
 
   def main(args: Array[String]): Unit = {
@@ -101,6 +105,13 @@ Creating `RpcEnv` is the same as above, and here use `setupEndpointRef` to creat
 `Future` is used here for async invocation.
 
 ```
+import net.neoremind.kraps.RpcConf
+import net.neoremind.kraps.rpc.{RpcAddress, RpcEndpointRef, RpcEnv, RpcEnvClientConfig}
+import net.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
+
 object HelloworldClient {
 
   def main(args: Array[String]): Unit = {
@@ -173,7 +184,7 @@ rpcConf.set("spark.rpc.netty.dispatcher.numThreads", "8")
 rpcConf.set("spark.rpc.connect.threads", "64")
 
 // By default kraps-rpc and spark rpc use java native serialization, but its performance is not good, here kraps-rpc provide an alternative to use FST serialization which is 99% compatible with java but provide a better performance in both time consuming and byte size.
-rpcConf.set("spark.rpc.serialization.stream.factory", "com.neoremind.kraps.serializer.FstSerializationStreamFactory")
+rpcConf.set("spark.rpc.serialization.stream.factory", "net.neoremind.kraps.serializer.FstSerializationStreamFactory")
 ```
 
 ## 3. More examples

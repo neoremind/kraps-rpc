@@ -1,4 +1,4 @@
-package com.neoremind.kraps.util
+package net.neoremind.kraps.util
 
 import java.io.InputStream
 import java.nio.ByteBuffer

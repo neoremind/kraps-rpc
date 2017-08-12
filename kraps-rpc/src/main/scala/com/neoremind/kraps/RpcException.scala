@@ -1,4 +1,4 @@
-package com.neoremind.kraps
+package net.neoremind.kraps
 
 class RpcException(message: String, cause: Throwable)
   extends Exception(message, cause) {

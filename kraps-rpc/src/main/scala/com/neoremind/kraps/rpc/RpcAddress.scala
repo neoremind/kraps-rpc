@@ -1,6 +1,6 @@
-package com.neoremind.kraps.rpc
+package net.neoremind.kraps.rpc
 
-import com.neoremind.kraps.util.Utils
+import net.neoremind.kraps.util.Utils
 
 
 /**

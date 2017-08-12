@@ -1,11 +1,11 @@
-package com.neoremind.kraps.rpc.netty
+package net.neoremind.kraps.rpc.netty
 
 import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap, LinkedBlockingQueue, ThreadPoolExecutor, TimeUnit}
 import javax.annotation.concurrent.GuardedBy
 
-import com.neoremind.kraps.RpcException
-import com.neoremind.kraps.rpc.{RpcEndpoint, RpcEndpointAddress, RpcEndpointRef, RpcEnvStoppedException}
-import com.neoremind.kraps.util.ThreadUtils
+import net.neoremind.kraps.RpcException
+import net.neoremind.kraps.rpc.{RpcEndpoint, RpcEndpointAddress, RpcEndpointRef, RpcEnvStoppedException}
+import net.neoremind.kraps.util.ThreadUtils
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Promise

@@ -1,9 +1,9 @@
-package com.neoremind.kraps.rpc.netty
+package net.neoremind.kraps.rpc.netty
 
 import javax.annotation.concurrent.GuardedBy
 
-import com.neoremind.kraps.RpcException
-import com.neoremind.kraps.rpc.{RpcAddress, RpcEndpoint, ThreadSafeRpcEndpoint}
+import net.neoremind.kraps.RpcException
+import net.neoremind.kraps.rpc.{RpcAddress, RpcEndpoint, ThreadSafeRpcEndpoint}
 
 import scala.util.control.NonFatal
 import org.slf4j.LoggerFactory
@@ -35,7 +35,7 @@ private[netty] case class RemoteProcessConnectionError(cause: Throwable, remoteA
   extends InboxMessage
 
 /**
-  * An inbox that stores messages for an [[com.neoremind.kraps.rpc.RpcEndpoint]] and posts messages to it thread-safely.
+  * An inbox that stores messages for an [[net.neoremind.kraps.rpc.RpcEndpoint]] and posts messages to it thread-safely.
   */
 private[netty] class Inbox(
                             val endpointRef: NettyRpcEndpointRef,

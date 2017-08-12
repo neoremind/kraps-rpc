@@ -1,6 +1,6 @@
-package com.neoremind.kraps.rpc
+package net.neoremind.kraps.rpc
 
-import com.neoremind.kraps.RpcException
+import net.neoremind.kraps.RpcException
 
 private[rpc] class RpcEndpointNotFoundException(uri: String)
   extends RpcException(s"Cannot find endpoint: $uri")
