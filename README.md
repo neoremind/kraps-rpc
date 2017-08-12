@@ -9,7 +9,11 @@ Kraps-rpc is a RPC framework split from [Spark](https://github.com/apache/spark)
 
 This module is mainly for studying how RPC works in Spark, as people know that Spark consists many distributed components, such as driver, master, executor, block manager, etc, and they communicate with each other through RPC. In Spark project the functionality is sealed in `Spark-core` module. 
 
-The module is based on Spark 2.1 version, which eliminate Akka due to [SPARK-5293](https://issues.apache.org/jira/browse/SPARK-5293).
+The module is based on Spark 2.1 version, which eliminate [Akka](http://akka.io/) due to [SPARK-5293](https://issues.apache.org/jira/browse/SPARK-5293).
+
+## 0 Dependency 
+
+
 
 ## 1 How to run  
 
