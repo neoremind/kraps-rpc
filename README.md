@@ -10,9 +10,9 @@ This module is mainly for studying how RPC works in Spark, as people know that S
 
 The module is based on Spark 2.1 version, which eliminate [Akka](http://akka.io/) due to [SPARK-5293](https://issues.apache.org/jira/browse/SPARK-5293).
 
-## 0 Dependency 
+## 0 Dependency
 
-You can configure you project by including dependency from below, currently only work with scala 2.11.
+You can configure you project by including dependency from below, currently only work with **scala 2.11**.
 
 Maven:
 
@@ -32,7 +32,7 @@ SBT:
 
 More depencencies please go to *Dependency tree* section.
 
-## 1 How to run  
+## 1 How to run
 
 The following examples can be found in [kraps-rpc-example](https://github.com/neoremind/kraps-rpc/tree/master/kraps-rpc-example)
 
@@ -176,9 +176,9 @@ rpcConf.set("spark.rpc.connect.threads", "64")
 rpcConf.set("spark.rpc.serialization.stream.factory", "com.neoremind.kraps.serializer.FstSerializationStreamFactory")
 ```
 
-### 3. More examples
+## 3. More examples
 
-Please visit [Test cases]() 
+Please visit [Test cases](https://github.com/neoremind/kraps-rpc/blob/master/kraps-rpc/src/test/scala/com/neoremind/kraps/RpcTest.scala) 
 
 ## 4. Dependency tree
 
@@ -206,7 +206,7 @@ Please visit [Test cases]()
 [INFO] +- com.google.guava:guava:jar:15.0:compile
 ```
 
-### 5. Ackownledgement
+## 5. Ackownledgement
 
 The development of Kraps-rpc is inspired by Spark. Kraps-rpc with Apache2.0 Open Source License retains all copyright, trademark, author’s information from Spark.
 
