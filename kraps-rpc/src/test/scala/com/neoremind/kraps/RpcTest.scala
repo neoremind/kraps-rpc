@@ -1,9 +1,11 @@
 package com.neoremind.kraps
 
+import java.io.{Externalizable, ObjectInput, ObjectOutput}
 import java.util.concurrent.TimeUnit
 
 import com.neoremind.kraps.rpc._
 import com.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
+import com.neoremind.kraps.util.Utils
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.Logger
 
@@ -28,6 +30,22 @@ class SimpleRpcTest extends BaseRpcTest {
     })
 
     def runBlock(endPointRef: RpcEndpointRef) = endPointRef.ask[String](Say("abc"))
+
+    clientCall(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock)
+  }
+
+  "EchoEndpoint" should "say complex message" in {
+    runServerAndAwaitTermination({
+      val echoEndpoint: RpcEndpoint = new EchoEndpoint(serverRpcEnv)
+      serverRpcEnv.setupEndpoint(EchoEndpoint.ENDPOINT_NAME, echoEndpoint)
+    })
+
+    def assertBlock: PartialFunction[Try[ComplexMessage], Unit] = {
+      case scala.util.Success(value) => value should be(ComplexMessage("hello", Int.MaxValue, Long.MinValue, true, Say("yes")))
+      case scala.util.Failure(e) => log.error("got failure: " + e.getMessage)
+    }
+
+    def runBlock(endPointRef: RpcEndpointRef) = endPointRef.ask[ComplexMessage](Say("complex"))
 
     clientCall(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock)
   }
@@ -99,7 +117,6 @@ class SimpleRpcTest extends BaseRpcTest {
 
   "EchoEndpoint" should "client call timeout due to slow response" in {
     val rpcConf = new RpcConf()
-    // or "spark.network.timeout"
     rpcConf.set("spark.rpc.askTimeout", "3s")
 
     runServerAndAwaitTermination({
@@ -115,7 +132,6 @@ class SimpleRpcTest extends BaseRpcTest {
 
   "EchoEndpoint" should "client call should retry" in {
     val rpcConf = new RpcConf()
-    // or "spark.network.timeout"
     rpcConf.set("spark.rpc.numRetries", "2")
     rpcConf.set("spark.rpc.retry.wait", "2s")
 
@@ -198,6 +214,19 @@ class SimpleRpcTest extends BaseRpcTest {
     }
   }
 
+  "EchoEndpoint" should "work on FST serializer" in {
+    val _rpcConf = new RpcConf()
+    _rpcConf.set("spark.rpc.serialization.stream.factory", "com.neoremind.kraps.serializer.FstSerializationStreamFactory")
+
+    runServerAndAwaitTermination({
+      val echoEndpoint: RpcEndpoint = new EchoEndpoint(serverRpcEnv)
+      serverRpcEnv.setupEndpoint(EchoEndpoint.ENDPOINT_NAME, echoEndpoint)
+    }, rpcConf = _rpcConf)
+
+    def runBlock(endPointRef: RpcEndpointRef) = endPointRef.ask[String](Say("abc"))
+
+    clientCall(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock, rpcConf = _rpcConf)
+  }
 }
 
 
@@ -217,6 +246,11 @@ class EchoEndpoint(realRpcEnv: RpcEnv)(implicit log: Logger) extends ThreadSafeR
     // Messages sent and received locally
     case Say(msg) => {
       log.info(s"server received $msg")
+      msg match {
+        case _ if StringUtils.equalsIgnoreCase(msg, "bad") => context.sendFailure(new SayFailureException)
+        case _ if StringUtils.equalsIgnoreCase(msg, "complex") => context.reply(ComplexMessage("hello", Int.MaxValue, Long.MinValue, true, Say("yes")))
+        case _ => context.reply(msg.toUpperCase)
+      }
       if (StringUtils.equalsIgnoreCase(msg, "bad")) {
         context.sendFailure(new SayFailureException)
       } else {
@@ -244,6 +278,31 @@ class EchoEndpoint(realRpcEnv: RpcEnv)(implicit log: Logger) extends ThreadSafeR
 
 object EchoEndpoint {
   val ENDPOINT_NAME = "my-echo"
+}
+
+case class ComplexMessage(var fieldStr: String,
+                          var fieldInt: Int,
+                          var fieldLong: Long,
+                          var fieldBoolean: Boolean,
+                          var fieldSay: Say) extends Externalizable {
+
+  def this() = this(null, 0, 0L, false, null) // For deserialization only
+
+  override def writeExternal(out: ObjectOutput): Unit = Utils.tryOrIOException {
+    out.writeUTF(fieldStr)
+    out.writeInt(fieldInt)
+    out.writeLong(fieldLong)
+    out.writeBoolean(fieldBoolean)
+    out.writeObject(fieldSay)
+  }
+
+  override def readExternal(in: ObjectInput): Unit = Utils.tryOrIOException {
+    fieldStr = in.readUTF()
+    fieldInt = in.readInt()
+    fieldLong = in.readLong()
+    fieldBoolean = in.readBoolean()
+    fieldSay = in.readObject().asInstanceOf[Say]
+  }
 }
 
 case class Say(msg: String)
