@@ -7,11 +7,13 @@
 
 Kraps-rpc is a RPC framework split from [Spark](https://github.com/apache/spark), you can regard it as `spark-rpc` with the word *spark* reversed. 
 
-This module is mainly for study how RPC works in Spark, as people know that Spark consists many distributed components, such as driver, master, executor, block manager, etc, and they communicate with each other through RPC. In Spark project the functionality is sealed in `Spark-core` module. 
+This module is mainly for studying how RPC works in Spark, as people know that Spark consists many distributed components, such as driver, master, executor, block manager, etc, and they communicate with each other through RPC. In Spark project the functionality is sealed in `Spark-core` module. 
+
+The module is based on Spark 2.1 version, which eliminate Akka due to [SPARK-5293](https://issues.apache.org/jira/browse/SPARK-5293).
 
 ## 1 How to run  
 
-The following examples can be found in [kraps-rpc-example]()
+The following examples can be found in [kraps-rpc-example](https://github.com/neoremind/kraps-rpc/tree/master/kraps-rpc-example)
 
 ### 1.1 Create an endpoint
 
@@ -51,10 +53,10 @@ case class SayBye(msg: String)
 
 There are a couple of steps to create a RPC server which provide `HelloEndpoint` service.
 
-1. Create `RpcEnvServerConfig`, `RpcConf` is where you can specify some parameters for the server, will be discussed later, `hello-server` is just a simple name, no real use later. Host and port must be speicified.
-2. Create `RpcEnv` which launches the server via TCP at localhost on port 52345.
-3. Create `HelloEndpoint` and setup it with an identifier of `hello-service`, the name is for client to route into the correct service.
-4. `awaitTermination` will block the thread and make server run with exit JVM.
+1. Create `RpcEnvServerConfig`, `RpcConf` is where you can specify some parameters for the server, will be discussed the below section, `hello-server` is just a simple name, no real use later. Host and port must be speicified. Note that is server can not bind on port, it will try to increase the port value by one and try next.
+2. Create `RpcEnv` which launches the server via TCP socket at localhost on port 52345.
+3. Create `HelloEndpoint` and setup it with an identifier of `hello-service`, the name is for client to call and route into the correct service.
+4. `awaitTermination` will block the thread and make server run without exiting JVM.
 
 ```
 object HelloworldServer {
@@ -122,7 +124,7 @@ object HelloworldClient {
 
 ## 2. About RpcConf
 
-`RpcConf` is simply `SparkConf` in Spark, there are a couple of parameters to specify. The are listed below, for most of them can reference to [Spark Configuration](http://spark.apache.org/docs/2.1.0/configuration.html).
+`RpcConf` is simply `SparkConf` in Spark, there are a couple of parameters to specify. They are listed below, for most of them you can reference to [Spark Configuration](http://spark.apache.org/docs/2.1.0/configuration.html).
 
 ```
 val rpcConf = new RpcConf()
