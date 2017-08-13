@@ -190,7 +190,7 @@ class SimpleRpcTest extends BaseRpcTest {
     }
 
     clientCallNonFuture(EchoEndpoint.ENDPOINT_NAME)(runBlock, assertBlock)
-    Thread.sleep(3000)
+    Thread.sleep(5000)
   }
 
   /**
