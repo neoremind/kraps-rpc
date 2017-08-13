@@ -73,6 +73,7 @@ abstract class BaseRpcTest extends FlatSpec with BeforeAndAfter with Matchers {
     var rpcEnv: RpcEnv = null
     try {
       startedCountDownLatch.await(serverStartTimeoutInMs, TimeUnit.MILLISECONDS)
+      Thread.sleep(100)
       val config = RpcEnvClientConfig(rpcConf, "test-client")
       rpcEnv = NettyRpcEnvFactory.create(config)
       val endPointRef: RpcEndpointRef = rpcEnv.setupEndpointRef(RpcAddress(host, port), endpointName)
