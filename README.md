@@ -1,12 +1,12 @@
 # kraps-rpc
 [![Build Status](https://travis-ci.org/neoremind/kraps-rpc.svg?branch=master)](https://travis-ci.org/neoremind/kraps-rpc)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.neoremind/kraps-rpc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.neoremind/kraps-rpc)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.neoremind/kraps-rpc_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.neoremind/kraps-rpc_2.11)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 
 Kraps-rpc is a RPC framework split from [Spark](https://github.com/apache/spark), you can regard it as `spark-rpc` with the word *spark* reversed. 
 
-This module is mainly for studying how RPC works in Spark, as people know that Spark consists many distributed components, such as driver, master, executor, block manager, etc, and they communicate with each other through RPC. In Spark project the functionality is sealed in `Spark-core` module. 
+This module is mainly for studying how RPC works in Spark, as people know that Spark consists many distributed components, such as driver, master, executor, block manager, etc, and they communicate with each other through RPC. In Spark project the functionality is sealed in `Spark-core` module. Kraps-rcp splits the core RCP part from it, not including security and streaming download feature.
 
 The module is based on Spark 2.1 version, which eliminate [Akka](http://akka.io/) due to [SPARK-5293](https://issues.apache.org/jira/browse/SPARK-5293).
 
@@ -70,6 +70,41 @@ case class SayBye(msg: String)
 
 ```
 
+`RpcEndpoint` is where to receive and handle requests, as “actor” notation in akka. `RpcEndpoint` does differentiate message “need-not-reply” from “need-reply”. Former one is much like UDP message(send and forget), latter one follows tcp way, waiting for one response.
+
+```
+  /**
+   * Process messages from [[RpcEndpointRef.send]] or [[RpcCallContext.reply)]]. If receiving a
+   * unmatched message, [[SparkException]] will be thrown and sent to `onError`.
+   */
+  def receive: PartialFunction[Any, Unit] = {
+    case _ => throw new SparkException(self + " does not implement 'receive'")
+  }
+
+  /**
+   * Process messages from [[RpcEndpointRef.ask]]. If receiving a unmatched message,
+   * [[SparkException]] will be thrown and sent to `onError`.
+   */
+  def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
+    case _ => context.sendFailure(new SparkException(self + " won't reply anything"))
+  }
+```
+
+One `RpcCallContext` is provided for endpoint to seprate endpoing logic from message transfer process. Providing function to reply result or send failure information :
+
+- reply(response: Any) : reply one message
+- sendFailure(e: Throwable) : send failure
+
+Also a serious status callback is provided(even more abundant status than acotr) :
+
+- onError
+- onConnected
+- onDisconnected
+- onNetworkError
+- onStart
+- onStop
+- stop
+
 ### 1.2 Run server
 
 There are a couple of steps to create a RPC server which provide `HelloEndpoint` service.
@@ -96,7 +131,7 @@ object HelloworldServer {
 }
 ```
 
-### 1.3 Create client
+### 1.3 Client call
 
 #### 1.3.1 Async invocation
 
@@ -156,40 +191,27 @@ object HelloworldClient {
 
 ## 2. About RpcConf
 
-`RpcConf` is simply `SparkConf` in Spark, there are a couple of parameters to specify. They are listed below, for most of them you can reference to [Spark Configuration](http://spark.apache.org/docs/2.1.0/configuration.html).
+`RpcConf` is simply `SparkConf` in Spark, there are a couple of parameters to specify. They are listed below, for most of them you can reference to [Spark Configuration](http://spark.apache.org/docs/2.1.0/configuration.html). For example, you can specify parameter in the following way.
 
 ```
 val rpcConf = new RpcConf()
-
-// Timeout to use for RPC remote endpoint lookup, whenever a call is made the client will always ask the server whether specific endpoint exists or not, this is for the asking timeout, default is 120s
 rpcConf.set("spark.rpc.lookupTimeout", "2s") 
-
-// Timeout to use for RPC ask operations, default is 120s
-rpcConf.set("spark.rpc.askTimeout", "3s")
-
-// Number of times to retry connecting, default is 3
-rpcConf.set("spark.rpc.numRetries", "2")
-
-// Number of milliseconds to wait on each retry, default is 3s
-rpcConf.set("spark.rpc.retry.wait", "2s")
-
-// Number of concurrent connections between two nodes for fetching data.
-// For reusing, used on client side to build client pool, please always set to 1
-rpcConf.set("spark.rpc.io.numConnectionsPerPeer", "1")
-
-// Actor Inbox dispatcher thread pool size, default is 8
-rpcConf.set("spark.rpc.netty.dispatcher.numThreads", "8")
-
-// Because TransportClientFactory.createClient is blocking, we need to run it in this thread pool, to implement non-blocking send/ask. Every remote address will have one client to serve, this is the pool used to create client.
-rpcConf.set("spark.rpc.connect.threads", "64")
-
-// By default kraps-rpc and spark rpc use java native serialization, but its performance is not good, here kraps-rpc provide an alternative to use FST serialization which is 99% compatible with java but provide a better performance in both time consuming and byte size.
-rpcConf.set("spark.rpc.serialization.stream.factory", "net.neoremind.kraps.serializer.FstSerializationStreamFactory")
 ```
+
+| Configuration                          | Description                              |
+| -------------------------------------- | ---------------------------------------- |
+| spark.rpc.lookupTimeout                | Timeout to use for RPC remote endpoint lookup, whenever a call is made the client will always ask the server whether specific endpoint exists or not, this is for the asking timeout, default is 120s |
+| spark.rpc.askTimeout                   | Timeout to use for RPC ask operations, default is 120s |
+| spark.rpc.numRetries                   | Number of times to retry connecting, default is 3 |
+| spark.rpc.retry.wait                   | Number of milliseconds to wait on each retry, default is 3s |
+| spark.rpc.io.numConnectionsPerPeer     | Number of concurrent connections between two nodes for fetching data. For reusing, used on client side to build client pool, please always set to 1 |
+| spark.rpc.netty.dispatcher.numThreads  | Actor Inbox dispatcher thread pool size, default is 8 |
+| spark.rpc.connect.threads              | Because TransportClientFactory.createClient is blocking, we need to run it in this thread pool, to implement non-blocking send/ask. Every remote address will have one client to serve, this is the pool used to create client. |
+| spark.rpc.serialization.stream.factory | By default kraps-rpc and spark rpc use java native serialization, but its performance is not good, here kraps-rpc provide an alternative to use FST serialization which is 99% compatible with java but provide a better performance in both time consuming and byte size. |
 
 ## 3. More examples
 
-Please visit [Test cases](https://github.com/neoremind/kraps-rpc/blob/master/kraps-rpc/src/test/scala/com/neoremind/kraps/RpcTest.scala) 
+Please find more in [test cases](https://github.com/neoremind/kraps-rpc/blob/master/kraps-rpc/src/test/scala/com/neoremind/kraps/RpcTest.scala).
 
 ## 4. Dependency tree
 
