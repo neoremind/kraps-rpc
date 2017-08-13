@@ -30,7 +30,7 @@ SBT:
 "net.neoremind" % "kraps-rpc_2.11" % "1.0.0"
 ```
 
-More depencencies please go to *Dependency tree* section.
+To learn more dependencies, please go to *Dependency tree* section.
 
 ## 1 How to run
 
@@ -90,12 +90,12 @@ case class SayBye(msg: String)
   }
 ```
 
-One `RpcCallContext` is provided for endpoint to seprate endpoing logic from message transfer process. Providing function to reply result or send failure information :
+One `RpcCallContext` is provided for endpoint to seprate endpoing logic from message transfer process. Providing function to reply result or send failure information:
 
 - reply(response: Any) : reply one message
 - sendFailure(e: Throwable) : send failure
 
-Also a serious status callback is provided(even more abundant status than acotr) :
+Also a serious status callback is provided(even more abundant status than actor) :
 
 - onError
 - onConnected
@@ -109,7 +109,7 @@ Also a serious status callback is provided(even more abundant status than acotr)
 
 There are a couple of steps to create a RPC server which provide `HelloEndpoint` service.
 
-1. Create `RpcEnvServerConfig`, `RpcConf` is where you can specify some parameters for the server, will be discussed the below section, `hello-server` is just a simple name, no real use later. Host and port must be speicified. Note that is server can not bind on port, it will try to increase the port value by one and try next.
+1. Create `RpcEnvServerConfig`, `RpcConf` is where you can specify some parameters for the server, will be discussed the below section, `hello-server` is just a simple name, no real use later. Host and port must be specified. Note that is server can not bind on port, it will try to increase the port value by one and try next.
 2. Create `RpcEnv` which launches the server via TCP socket at localhost on port 52345.
 3. Create `HelloEndpoint` and setup it with an identifier of `hello-service`, the name is for client to call and route into the correct service.
 4. `awaitTermination` will block the thread and make server run without exiting JVM.
@@ -133,11 +133,11 @@ object HelloworldServer {
 
 ### 1.3 Client call
 
-#### 1.3.1 Async invocation
+#### 1.3.1 Asynchronous invocation
 
 Creating `RpcEnv` is the same as above, and here use `setupEndpointRef` to create a stub to call remote server at localhost on port 52345 and route to `hello-service`.
 
-`Future` is used here for async invocation.
+`Future` is used here for asynchronous invocation.
 
 ```
 import net.neoremind.kraps.RpcConf
@@ -165,13 +165,13 @@ object HelloworldClient {
 }
 ```
 
-#### 1.3.2 Sync invocation
+#### 1.3.2 Synchronous invocation
 
 Creating `RpcEnv` is the same as above, and here use `setupEndpointRef` to create a stub to call remote server at localhost on port 52345 and route to `hello-service`.
 
 Use `askWithRetry` instead of `ask` to call in sync way. 
 
-*Note that in lastest Spark version the method signature has changed to `askSync`.*
+*Note that in latest Spark version the method signature has changed to `askSync`.*
 
 ```
 object HelloworldClient {
