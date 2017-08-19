@@ -7,7 +7,7 @@
 
 Kraps-rpc is a RPC framework split from [Spark](https://github.com/apache/spark), you can regard it as `spark-rpc` with the word *spark* reversed. 
 
-This module is mainly for studying how RPC works in Spark, as people know that Spark consists many distributed components, such as driver, master, executor, block manager, etc, and they communicate with each other through RPC. In Spark project the functionality is sealed in `Spark-core` module. Kraps-rcp splits the core RCP part from it, not including security and streaming download feature.
+This module is mainly for studying how RPC works in Spark, as people knows that Spark consists many distributed components, such as driver, master, executor, block manager, etc, and they communicate with each other through RPC. In Spark project the functionality is sealed in `Spark-core` module. Kraps-rpc separates the core RCP part from it, not including security and streaming download feature.
 
 The module is based on Spark 2.1 version, which eliminate [Akka](http://akka.io/) due to [SPARK-5293](https://issues.apache.org/jira/browse/SPARK-5293).
 
@@ -35,7 +35,7 @@ To learn more dependencies, please go to *Dependency tree* section.
 
 ## 1 How to run
 
-The following examples can be found in [kraps-rpc-example](https://github.com/neoremind/kraps-rpc/tree/master/kraps-rpc-example)
+The following examples can be found in [kraps-rpc-example](https://github.com/neoremind/kraps-rpc/tree/master/kraps-rpc-example/src/main/scala)
 
 ### 1.1 Create an endpoint
 
@@ -71,7 +71,7 @@ case class SayBye(msg: String)
 
 ```
 
-`RpcEndpoint` is where to receive and handle requests, as “actor” notation in akka. `RpcEndpoint` does differentiate message “need-not-reply” from “need-reply”. Former one is much like UDP message(send and forget), latter one follows tcp way, waiting for one response.
+`RpcEndpoint` is where to receive and handle requests, as `actor` notation in akka. `RpcEndpoint` does differentiate message `need-not-reply` from `need-reply`. Former one is much like UDP message (send and forget), latter one follows tcp way, waiting for one response.
 
 ```
   /**
@@ -91,12 +91,12 @@ case class SayBye(msg: String)
   }
 ```
 
-One `RpcCallContext` is provided for endpoint to seprate endpoing logic from message transfer process. Providing function to reply result or send failure information:
+One `RpcCallContext` is provided for endpoint to separate endpoing logic from message network transport process. Providing function to reply result or send failure information:
 
 - reply(response: Any) : reply one message
 - sendFailure(e: Throwable) : send failure
 
-Also a serious status callback is provided(even more abundant status than actor) :
+Also a serious status callbacks are provided :
 
 - onError
 - onConnected
@@ -110,7 +110,7 @@ Also a serious status callback is provided(even more abundant status than actor)
 
 There are a couple of steps to create a RPC server which provide `HelloEndpoint` service.
 
-1. Create `RpcEnvServerConfig`, `RpcConf` is where you can specify some parameters for the server, will be discussed the below section, `hello-server` is just a simple name, no real use later. Host and port must be specified. Note that is server can not bind on port, it will try to increase the port value by one and try next.
+1. Create `RpcEnvServerConfig`, `RpcConf` is where you can specify some parameters for the server, will be discussed in the below section, `hello-server` is just a simple name, no real use later. Host and port must be specified. Note that if server cannot bind on the specified port, it will try to increase the port value by one and try next.
 2. Create `RpcEnv` which launches the server via TCP socket at localhost on port 52345.
 3. Create `HelloEndpoint` and setup it with an identifier of `hello-service`, the name is for client to call and route into the correct service.
 4. `awaitTermination` will block the thread and make server run without exiting JVM.
@@ -170,7 +170,7 @@ object HelloworldClient {
 
 Creating `RpcEnv` is the same as above, and here use `setupEndpointRef` to create a stub to call remote server at localhost on port 52345 and route to `hello-service`.
 
-Use `askWithRetry` instead of `ask` to call in sync way. 
+Use `askWithRetry` instead of `ask` to call in synchronous way. 
 
 *Note that in latest Spark version the method signature has changed to `askSync`.*
 
@@ -192,7 +192,7 @@ object HelloworldClient {
 
 ## 2. About RpcConf
 
-`RpcConf` is simply `SparkConf` in Spark, there are a couple of parameters to specify. They are listed below, for most of them you can reference to [Spark Configuration](http://spark.apache.org/docs/2.1.0/configuration.html). For example, you can specify parameter in the following way.
+`RpcConf` is simply `SparkConf` in Spark, there are a couple of parameters that can be adjusted. They are listed below, for most of them you can reference to [Spark Configuration](http://spark.apache.org/docs/2.1.0/configuration.html). For example, you can specify parameter in the following way.
 
 ```
 val rpcConf = new RpcConf()
@@ -208,7 +208,7 @@ rpcConf.set("spark.rpc.lookupTimeout", "2s")
 | spark.rpc.io.numConnectionsPerPeer     | Spark RPC maintains an array of clients and randomly picks one to use. Number of concurrent connections between two nodes for fetching data. For reusing, used on client side to build client pool, please always set to 1, default is 1. |
 | spark.rpc.netty.dispatcher.numThreads  | For server side, actor Inbox dispatcher thread pool size, it is where endpoint business logic runs, if endpoints stall and reach to this number, event new RPC messages can be accepted, but server can not handle them in endpoint due to the limit, default is 8. |
 | spark.rpc.io.threads                   | For server and client side netty eventloop, this number is reactor thread pool size, the thread is responsible for accepting new connections and closing connections, serialize and deserialize byte array to RpcMessage object and push RpcMessage to actor pattern based Inbox for dispatcher to pick up and process, dispatcher concurrent level is set by`spark.rpc.netty.dispatcher.numThreads`. Default number is CPU cores * 2, min is 1. |
-| spark.rpc.serialization.stream.factory | By default kraps-rpc and spark rpc use java native serialization, but its performance is not good, here kraps-rpc provide an alternative to use FST serialization which is 99% compatible with java but provide a better performance in both time consuming and byte size. |
+| spark.rpc.serialization.stream.factory | By default kraps-rpc and spark rpc use java native serialization, but its performance is not good, here kraps-rpc provide an alternative to use [FST serialization](https://github.com/RuedigerMoeller/fast-serialization)  which provides up to 10 times faster 100% JDK Serialization compatible drop-in replacement feature. |
 
 ## 3. More examples
 
@@ -232,18 +232,18 @@ OpenJDK 64-Bit Server VM (build 25.131-b11, mixed mode)
 
 ### 4.2 Test case
 
-All performance related test cases can be found in `kraps-rpc-example`. Keep all parameters as default value.
+All performance related test cases can be found in [kraps-rpc-example](https://github.com/neoremind/kraps-rpc/tree/master/kraps-rpc-example/src/main/scala). Keep all parameters as default values.
 
-Click here to see server test case. Server running command is 
-
-```
-java -server -Xms4096m -Xmx4096m -cp kraps-rpc-example_2.11-1.0.1-SNAPSHOT-jar-with-dependencies.jar HelloworldServer 10.96.185.253
-```
-
-Click here to see client test cases. Client running command is
+[Click here](https://github.com/neoremind/kraps-rpc/blob/master/kraps-rpc-example/src/main/scala/HelloworldServer.scala) to see server test case. Server running command is 
 
 ```
-java -server -Xms2048m -Xmx2048m -cp kraps-rpc-example_2.11-1.0.1-SNAPSHOT-jar-with-dependencies.jar PerformanceTestClient 10.96.185.253 <invocation number> <concurrent calls>
+java -server -Xms4096m -Xmx4096m -cp kraps-rpc-example_2.11-1.0.1-SNAPSHOT-jar-with-dependencies.jar HelloworldServer <ip>
+```
+
+[Click here](https://github.com/neoremind/kraps-rpc/blob/master/kraps-rpc-example/src/main/scala/PerformanceTestClient.scala) to see client test case. Client running command is
+
+```
+java -server -Xms2048m -Xmx2048m -cp kraps-rpc-example_2.11-1.0.1-SNAPSHOT-jar-with-dependencies.jar PerformanceTestClient <ip> <invocation number> <concurrent calls>
 ```
 
 ### 4.3 Test result
@@ -260,7 +260,7 @@ Below is CPU usage of client VM during the time performance tests are executed.
 
 ![](https://github.com/neoremind/mydoc/blob/master/image/kraps_rpc_performance_test_client_cpu_usage.png?raw=true)
 
-As shown above, during testing phase, not all CPU cores are occupied and network bandwidth still has room, I believe it is caused by the client side limit, with single multi-threaded client process, if concurrent call thread-pool size sets to 2000, it is sure that too much context switch will be occurring and it cannot ask more messages out to the server. In my opinion, the server side QPS can be higher in real world by leveraging `Netty` and `Actor pattern`. 
+As shown above, during testing phase, not all CPU cores are occupied and network bandwidth still has room, I believe it is caused by the client side limit, with single multi-threaded client process, if concurrent call thread-pool size sets to 2000, it is sure that too much context switch will be occurring and it cannot ask more messages out to the server. In my opinion, the server side QPS can be higher in real world by leveraging [Netty](http://netty.io/) and an actor pattern style to handle network IO. 
 
 ## 5. Dependency tree
 
