@@ -228,7 +228,7 @@ class SimpleRpcTest extends BaseRpcTest {
 }
 
 
-class EchoEndpoint(realRpcEnv: RpcEnv)(implicit log: Logger) extends ThreadSafeRpcEndpoint {
+class EchoEndpoint(realRpcEnv: RpcEnv)(implicit log: Logger) extends RpcEndpoint {
 
   override def onStart(): Unit = {
     log.info("server start echo endpoint")

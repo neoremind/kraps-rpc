@@ -42,7 +42,7 @@ The following examples can be found in [kraps-rpc-example](https://github.com/ne
 Creating an endpoint which contains the business logic you would like to provide as a RPC service. Below shows a simple example of a hello world echo service.
 
 ```
-class HelloEndpoint(override val rpcEnv: RpcEnv) extends ThreadSafeRpcEndpoint {
+class HelloEndpoint(override val rpcEnv: RpcEnv) extends RpcEndpoint {
 
   override def onStart(): Unit = {
     println("start hello endpoint")
@@ -205,16 +205,64 @@ rpcConf.set("spark.rpc.lookupTimeout", "2s")
 | spark.rpc.askTimeout                   | Timeout to use for RPC ask operations, default is 120s |
 | spark.rpc.numRetries                   | Number of times to retry connecting, default is 3 |
 | spark.rpc.retry.wait                   | Number of milliseconds to wait on each retry, default is 3s |
-| spark.rpc.io.numConnectionsPerPeer     | Number of concurrent connections between two nodes for fetching data. For reusing, used on client side to build client pool, please always set to 1 |
-| spark.rpc.netty.dispatcher.numThreads  | Actor Inbox dispatcher thread pool size, default is 8 |
-| spark.rpc.connect.threads              | Because TransportClientFactory.createClient is blocking, we need to run it in this thread pool, to implement non-blocking send/ask. Every remote address will have one client to serve, this is the pool used to create client. |
+| spark.rpc.io.numConnectionsPerPeer     | Spark RPC maintains an array of clients and randomly picks one to use. Number of concurrent connections between two nodes for fetching data. For reusing, used on client side to build client pool, please always set to 1, default is 1. |
+| spark.rpc.netty.dispatcher.numThreads  | For server side, actor Inbox dispatcher thread pool size, it is where endpoint business logic runs, if endpoints stall and reach to this number, event new RPC messages can be accepted, but server can not handle them in endpoint due to the limit, default is 8. |
+| spark.rpc.io.threads                   | For server and client side netty eventloop, this number is reactor thread pool size, the thread is responsible for accepting new connections and closing connections, serialize and deserialize byte array to RpcMessage object and push RpcMessage to actor pattern based Inbox for dispatcher to pick up and process, dispatcher concurrent level is set by`spark.rpc.netty.dispatcher.numThreads`. Default number is CPU cores * 2, min is 1. |
 | spark.rpc.serialization.stream.factory | By default kraps-rpc and spark rpc use java native serialization, but its performance is not good, here kraps-rpc provide an alternative to use FST serialization which is 99% compatible with java but provide a better performance in both time consuming and byte size. |
 
 ## 3. More examples
 
 Please find more in [test cases](https://github.com/neoremind/kraps-rpc/blob/master/kraps-rpc/src/test/scala/com/neoremind/kraps/RpcTest.scala).
 
-## 4. Dependency tree
+## 4. Performance test
+
+### 4.1 Test environment
+
+One server and one client will be setup for testing at the same rack hosted in VM in different phasical machines. Test environment lists as below.
+
+```
+CPU: Intel(R) Xeon(R) CPU E5-2620 v3 @ 2.40GHz 4 cores
+Memory: 8G
+OS: Linux ap-inf01 4.4.0-78-generic #99-Ubuntu SMP Thu Apr 27 15:29:09 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+JDK: 
+openjdk version "1.8.0_131"
+OpenJDK Runtime Environment (build 1.8.0_131-8u131-b11-2ubuntu1.16.04.3-b11)
+OpenJDK 64-Bit Server VM (build 25.131-b11, mixed mode)
+```
+
+### 4.2 Test case
+
+All performance related test cases can be found in `kraps-rpc-example`. Keep all parameters as default value.
+
+Click here to see server test case. Server running command is 
+
+```
+java -server -Xms4096m -Xmx4096m -cp kraps-rpc-example_2.11-1.0.1-SNAPSHOT-jar-with-dependencies.jar HelloworldServer 10.96.185.253
+```
+
+Click here to see client test cases. Client running command is
+
+```
+java -server -Xms2048m -Xmx2048m -cp kraps-rpc-example_2.11-1.0.1-SNAPSHOT-jar-with-dependencies.jar PerformanceTestClient 10.96.185.253 <invocation number> <concurrent calls>
+```
+
+### 4.3 Test result
+
+Peak QPS will reach to more than 18k as concurrent level goes up.
+
+![](https://github.com/neoremind/mydoc/blob/master/image/kraps_rpc_performance_QPS.png?raw=true)
+
+Below is CPU usage of server VM during the time performance tests are executed.
+
+![](https://github.com/neoremind/mydoc/blob/master/image/kraps_rpc_performance_test_server_cpu_usage.png?raw=true)
+
+Below is CPU usage of client VM during the time performance tests are executed.
+
+![](https://github.com/neoremind/mydoc/blob/master/image/kraps_rpc_performance_test_client_cpu_usage.png?raw=true)
+
+As shown above, during testing phase, not all CPU cores are occupied and network bandwidth still has room, I believe it is caused by the client side limit, with single multi-threaded client process, if concurrent call thread-pool size sets to 2000, it is sure that too much context switch will be occurring and it cannot ask more messages out to the server. In my opinion, the server side QPS can be higher in real world by leveraging `Netty` and `Actor pattern`. 
+
+## 5. Dependency tree
 
 ```
 [INFO] +- org.apache.spark:spark-network-common_2.11:jar:2.1.0:compile
@@ -240,7 +288,7 @@ Please find more in [test cases](https://github.com/neoremind/kraps-rpc/blob/mas
 [INFO] +- com.google.guava:guava:jar:15.0:compile
 ```
 
-## 5. Ackownledgement
+## 6. Ackownledgement
 
 The development of Kraps-rpc is inspired by Spark. Kraps-rpc with Apache2.0 Open Source License retains all copyright, trademark, author’s information from Spark.
 
