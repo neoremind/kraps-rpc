@@ -11,7 +11,21 @@ This module is mainly for studying how RPC works in Spark, as people knows that 
 
 The module is based on Spark 2.1 version, which eliminate [Akka](http://akka.io/) due to [SPARK-5293](https://issues.apache.org/jira/browse/SPARK-5293).
 
-## 0 Dependency
+- [0. Dependency](#0-dependency)
+- [1. How to run](#1-how-to-run)
+  - [1.1 Create an endpoint](#11-create-an-endpoint)
+  - [1.2 Run server](#12-run-server)
+  - [1.3 Client call](#13-client-call)
+- [2. About RpcConf](#2-about-rpcconf)
+- [3. More examples](#3-more-examples)
+- [4. Performance test](#4-performance-test)
+  - [4.1 Test environment](#41-test-environment)
+  - [4.2 Test case](#42-test-case) 
+  - [4.3 Test result](#43-test-result) 
+- [5. Dependency tree](#5-dependency-tree)
+  
+
+## 0. Dependency
 
 You can configure you project by including dependency from below, currently only work with **scala 2.11**.
 
@@ -33,7 +47,7 @@ SBT:
 
 To learn more dependencies, please go to *Dependency tree* section.
 
-## 1 How to run
+## 1. How to run
 
 The following examples can be found in [kraps-rpc-example](https://github.com/neoremind/kraps-rpc/tree/master/kraps-rpc-example/src/main/scala)
 
@@ -288,7 +302,7 @@ As shown above, during testing phase, not all CPU cores are occupied and network
 [INFO] +- com.google.guava:guava:jar:15.0:compile
 ```
 
-## 6. Ackownledgement
+## 6. Acknowledgement
 
 The development of Kraps-rpc is inspired by Spark. Kraps-rpc with Apache2.0 Open Source License retains all copyright, trademark, author’s information from Spark.
 
