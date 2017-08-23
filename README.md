@@ -239,7 +239,6 @@ CPU: Intel(R) Xeon(R) CPU E5-2620 v3 @ 2.40GHz 4 cores
 Memory: 8G
 OS: Linux ap-inf01 4.4.0-78-generic #99-Ubuntu SMP Thu Apr 27 15:29:09 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
 JDK: 
-openjdk version "1.8.0_131"
 OpenJDK Runtime Environment (build 1.8.0_131-8u131-b11-2ubuntu1.16.04.3-b11)
 OpenJDK 64-Bit Server VM (build 25.131-b11, mixed mode)
 ```
@@ -274,7 +273,7 @@ Below is CPU usage of client VM during the time performance tests are executed.
 
 ![](https://github.com/neoremind/mydoc/blob/master/image/kraps_rpc_performance_test_client_cpu_usage.png?raw=true)
 
-As shown above, during testing phase, not all CPU cores are occupied and network bandwidth still has room, I believe it is caused by the client side limit, with single multi-threaded client process, if concurrent call thread-pool size sets to 2000, it is sure that too much context switch will be occurring and it cannot ask more messages out to the server. In my opinion, the server side QPS can be higher in real world by leveraging [Netty](http://netty.io/) and an actor pattern style to handle network IO. 
+As shown above, during testing phase, server workload is not very high, I think there is still room for higher QPS if more concurrent client calls could be made.
 
 ## 5. Dependency tree
 
