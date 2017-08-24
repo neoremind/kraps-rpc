@@ -213,6 +213,12 @@ val rpcConf = new RpcConf()
 rpcConf.set("spark.rpc.lookupTimeout", "2s") 
 ```
 
+The parameters can also be set in VM options like:
+```
+-Dspark.rpc.netty.dispatcher.numThreads=16 -Dspark.rpc.io.threads=8
+```
+
+
 | Configuration                          | Description                              |
 | -------------------------------------- | ---------------------------------------- |
 | spark.rpc.lookupTimeout                | Timeout to use for RPC remote endpoint lookup, whenever a call is made the client will always ask the server whether specific endpoint exists or not, this is for the asking timeout, default is 120s |
@@ -222,7 +228,6 @@ rpcConf.set("spark.rpc.lookupTimeout", "2s")
 | spark.rpc.io.numConnectionsPerPeer     | Spark RPC maintains an array of clients and randomly picks one to use. Number of concurrent connections between two nodes for fetching data. For reusing, used on client side to build client pool, please always set to 1, default is 1. |
 | spark.rpc.netty.dispatcher.numThreads  | For server side, actor Inbox dispatcher thread pool size, it is where endpoint business logic runs, if endpoints stall and reach to this number, event new RPC messages can be accepted, but server can not handle them in endpoint due to the limit, default is 8. |
 | spark.rpc.io.threads                   | For server and client side netty eventloop, this number is reactor thread pool size, the thread is responsible for accepting new connections and closing connections, serialize and deserialize byte array to RpcMessage object and push RpcMessage to actor pattern based Inbox for dispatcher to pick up and process, dispatcher concurrent level is set by`spark.rpc.netty.dispatcher.numThreads`. Default number is CPU cores * 2, min is 1. |
-| spark.rpc.serialization.stream.factory | By default kraps-rpc and spark rpc use java native serialization, but its performance is not good, here kraps-rpc provide an alternative to use [FST serialization](https://github.com/RuedigerMoeller/fast-serialization)  which provides up to 10 times faster 100% JDK Serialization compatible drop-in replacement feature. |
 
 ## 3. More examples
 
