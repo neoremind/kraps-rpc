@@ -5,7 +5,6 @@ scalaVersion := "2.11.8"
 lazy val root = (project in file(".")).aggregate(krapsRpc, krapsRpcExample)
 
 lazy val commonSettings = Seq(
-  name := "kraps-rpc",
   organization := "neoremind",
   version := "1.0.1-SNAPSHOT",
   scalaVersion := "2.11.8",
@@ -42,4 +41,7 @@ lazy val krapsRpc = (project in file("kraps-core"))
     )
   )
 
-lazy val krapsRpcExample = (project in file("kraps-rpc-example")).settings(commonSettings: _*).dependsOn(krapsRpc)
+lazy val krapsRpcExample = (project in file("kraps-rpc-example"))
+  .settings(commonSettings: _*)
+  .settings(name := "kraps-rpc-example")
+  .dependsOn(krapsRpc)
