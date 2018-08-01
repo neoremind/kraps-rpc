@@ -4,4 +4,7 @@ scala:
     - 2.11.8
 
 script:
-    - sbt clean coverage test coverageReport
+    - sbt clean 'project kraps-core' 'coverage' 'test' 'coverageReport'
+
+after_success:
+    -   sbt 'project kraps-core' 'coverageReport' 'coveralls'
