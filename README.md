@@ -231,7 +231,7 @@ The parameters can also be set in VM options like:
 
 ## 3. More examples
 
-Please find more in [test cases](https://github.com/neoremind/kraps-rpc/blob/master/kraps-rpc/src/test/scala/com/neoremind/kraps/RpcTest.scala).
+Please find more in [test cases](https://github.com/neoremind/kraps-rpc/blob/master/kraps-core/src/test/scala/com/neoremind/kraps/RpcTest.scala).
 
 ## 4. Performance test
 
