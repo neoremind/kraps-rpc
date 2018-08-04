@@ -1,10 +1,10 @@
-language: java
+language: scala
 
-#jdk:
-#  - openjdk8
-#
-#install:
-#    mvn test
+scala:
+    - 2.11.8
+
+script:
+    - sbt clean 'project krapsRpc' 'coverage' 'test' 'coverageReport'
 
 after_success:
-  - mvn jacoco:report coveralls:report
+    -   sbt 'project krapsRpc' 'coverageReport' 'coveralls'
