@@ -12,7 +12,7 @@
     </description>
 
     <modules>
-        <module>kraps-rpc</module>
+        <module>kraps-core</module>
         <!--<module>kraps-rpc-example</module>-->
     </modules>
 
@@ -321,7 +321,7 @@
         <developer>
             <name>Xu Zhang</name>
             <id>neoremind</id>
-            <email>xuzhang1986@gmail.com</email>
+            <email>xuzh1002@gmail.com</email>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -331,7 +331,7 @@
 
     <organization>
         <name>neoremind</name>
-        <url>http://neoremind.net</url>
+        <url>http://neoremind.com</url>
     </organization>
 
     <scm>
@@ -340,7 +340,7 @@
         <tag>kraps-rpc-1.0.0</tag>
     </scm>
 
-    <url>https://github.com/neoremind/fluent-validator</url>
+    <url>https://github.com/neoremind/kraps-rpc</url>
 
     <profiles>
         <profile>
