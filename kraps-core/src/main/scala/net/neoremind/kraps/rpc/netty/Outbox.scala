@@ -19,8 +19,8 @@ package net.neoremind.kraps.rpc.netty
 
 import java.nio.ByteBuffer
 import java.util.concurrent.Callable
-import javax.annotation.concurrent.GuardedBy
 
+import javax.annotation.concurrent.GuardedBy
 import net.neoremind.kraps.RpcException
 import net.neoremind.kraps.rpc.{RpcAddress, RpcEnvStoppedException}
 import org.apache.spark.network.client.{RpcResponseCallback, TransportClient}

@@ -1,3 +1,7 @@
+import net.neoremind.kraps.RpcConf
+import net.neoremind.kraps.rpc.{RpcCallContext, RpcEndpoint, RpcEnv, RpcEnvServerConfig}
+import net.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -14,10 +18,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import net.neoremind.kraps.RpcConf
-import net.neoremind.kraps.rpc._
-import net.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
 
 /**
   * Usage:

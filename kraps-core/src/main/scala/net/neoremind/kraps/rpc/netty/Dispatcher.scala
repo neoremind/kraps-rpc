@@ -18,8 +18,8 @@
 package net.neoremind.kraps.rpc.netty
 
 import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap, LinkedBlockingQueue, ThreadPoolExecutor, TimeUnit}
-import javax.annotation.concurrent.GuardedBy
 
+import javax.annotation.concurrent.GuardedBy
 import net.neoremind.kraps.RpcException
 import net.neoremind.kraps.rpc.{RpcEndpoint, RpcEndpointAddress, RpcEndpointRef, RpcEnvStoppedException}
 import net.neoremind.kraps.util.ThreadUtils

@@ -22,8 +22,8 @@ import java.net.{InetSocketAddress, URI}
 import java.nio.ByteBuffer
 import java.util.concurrent._
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.annotation.Nullable
 
+import javax.annotation.Nullable
 import net.neoremind.kraps.RpcConf
 import net.neoremind.kraps.rpc._
 import net.neoremind.kraps.serializer.{JavaSerializer, JavaSerializerInstance}
@@ -79,7 +79,7 @@ class NettyRpcEnv(
   private val stopped = new AtomicBoolean(false)
 
   /**
-    * A map for [[RpcAddress]] and [[Outbox]]. When we are connecting to a remote [[RpcAddress]],
+    * A map for [[net.neoremind.kraps.rpc.RpcAddress]] and [[Outbox]]. When we are connecting to a remote [[RpcAddress]],
     * we just put messages to its [[Outbox]] to implement a non-blocking `send` method.
     */
   private val outboxes = new ConcurrentHashMap[RpcAddress, Outbox]()

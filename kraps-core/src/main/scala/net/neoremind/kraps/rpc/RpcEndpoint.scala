@@ -65,7 +65,7 @@ trait RpcEndpoint {
 
   /**
     * Process messages from [[RpcEndpointRef.send]] or [[RpcCallContext.reply)]]. If receiving a
-    * unmatched message, [[RpcException]] will be thrown and sent to `onError`.
+    * unmatched message, [[net.neoremind.kraps.RpcException]] will be thrown and sent to `onError`.
     */
   def receive: PartialFunction[Any, Unit] = {
     case _ => throw new RpcException(self + " does not implement 'receive'")

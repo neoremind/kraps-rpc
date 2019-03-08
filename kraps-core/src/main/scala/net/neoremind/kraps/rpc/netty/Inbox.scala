@@ -18,7 +18,6 @@
 package net.neoremind.kraps.rpc.netty
 
 import javax.annotation.concurrent.GuardedBy
-
 import net.neoremind.kraps.RpcException
 import net.neoremind.kraps.rpc.{RpcAddress, RpcEndpoint, ThreadSafeRpcEndpoint}
 

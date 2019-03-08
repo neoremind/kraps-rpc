@@ -21,7 +21,6 @@ import net.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
