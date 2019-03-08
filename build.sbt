@@ -1,10 +1,8 @@
 name := "kraps-rpc"
 
-lazy val scala212 = "2.12.8"
-lazy val scala211 = "2.11.12"
+lazy val scala212               = "2.12.8"
+lazy val scala211               = "2.11.12"
 lazy val supportedScalaVersions = List(scala212, scala211)
-
-// scalaVersion := "2.12.8"
 
 lazy val root = (project in file("."))
   .aggregate(krapsRpc, krapsRpcExample)
