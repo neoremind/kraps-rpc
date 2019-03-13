@@ -231,7 +231,7 @@ class SimpleRpcTest extends BaseRpcTest {
 
   "EchoEndpoint" should "work on FST serializer" in {
     val _rpcConf = new RpcConf()
-    _rpcConf.set("spark.rpc.serialization.stream.factory", "FstSerializationStreamFactory")
+    _rpcConf.set("spark.rpc.serialization.stream.factory", "net.neoremind.kraps.serializer.FstSerializationStreamFactory")
 
     runServerAndAwaitTermination({
       val echoEndpoint: RpcEndpoint = new EchoEndpoint(serverRpcEnv)
