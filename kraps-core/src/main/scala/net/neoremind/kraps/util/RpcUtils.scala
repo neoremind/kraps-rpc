@@ -17,9 +17,9 @@
 
 package net.neoremind.kraps.util
 
-
 import net.neoremind.kraps.RpcConf
 import net.neoremind.kraps.rpc.{RpcAddress, RpcEndpointRef, RpcEnv, RpcTimeout}
+
 
 object RpcUtils {
 

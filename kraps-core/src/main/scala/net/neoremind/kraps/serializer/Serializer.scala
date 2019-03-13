@@ -19,8 +19,8 @@ package net.neoremind.kraps.serializer
 
 import java.io._
 import java.nio.ByteBuffer
-import javax.annotation.concurrent.NotThreadSafe
 
+import javax.annotation.concurrent.NotThreadSafe
 import net.neoremind.kraps.util.NextIterator
 
 import scala.reflect.ClassTag

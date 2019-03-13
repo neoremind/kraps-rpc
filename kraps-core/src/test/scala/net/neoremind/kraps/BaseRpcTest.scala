@@ -20,8 +20,8 @@ package net.neoremind.kraps
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
-import net.neoremind.kraps.rpc._
 import net.neoremind.kraps.rpc.netty.NettyRpcEnvFactory
+import net.neoremind.kraps.rpc._
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 import org.slf4j.LoggerFactory
 
@@ -65,11 +65,20 @@ abstract class BaseRpcTest extends FlatSpec with BeforeAndAfter with Matchers {
     */
   val clientCallWaitTimeInSec = "30s"
 
+  val defRpcConf = {
+    val rpcConf = new RpcConf()
+    rpcConf.set("spark.rpc.serialization.stream.factory",
+                "net.neoremind.kraps.serializer.FstSerializationStreamFactory")
+    rpcConf
+  }
+
   def runServerAndAwaitTermination(block: => Unit,
                                    rpcConf: RpcConf = new RpcConf(),
                                    host: String = "localhost",
                                    port: Int = _port.get()) = {
     val future = Future {
+      rpcConf.set("spark.rpc.serialization.stream.factory",
+                  "net.neoremind.kraps.serializer.FstSerializationStreamFactory")
       val config = RpcEnvServerConfig(rpcConf, "hello-server", host, port)
       serverRpcEnv = NettyRpcEnvFactory.create(config)
       block
@@ -78,7 +87,7 @@ abstract class BaseRpcTest extends FlatSpec with BeforeAndAfter with Matchers {
     }
     future.onComplete {
       case scala.util.Success(value) => log.info(s"Shut down server on host=$host, port=" + port)
-      case scala.util.Failure(e) => log.error(e.getMessage, e)
+      case scala.util.Failure(e)     => log.error(e.getMessage, e)
     }
   }
 
@@ -93,7 +102,8 @@ abstract class BaseRpcTest extends FlatSpec with BeforeAndAfter with Matchers {
       Thread.sleep(200)
       val config = RpcEnvClientConfig(rpcConf, "test-client")
       rpcEnv = NettyRpcEnvFactory.create(config)
-      val endPointRef: RpcEndpointRef = rpcEnv.setupEndpointRef(RpcAddress(host, port), endpointName)
+      val endPointRef: RpcEndpointRef =
+        rpcEnv.setupEndpointRef(RpcAddress(host, port), endpointName)
       log.info(s"created $endPointRef")
       val future = runBlock(endPointRef)
       future.onComplete(assertBlock)
@@ -118,7 +128,8 @@ abstract class BaseRpcTest extends FlatSpec with BeforeAndAfter with Matchers {
       startedCountDownLatch.await(serverStartTimeoutInMs, TimeUnit.MILLISECONDS)
       val config = RpcEnvClientConfig(rpcConf, "test-client")
       rpcEnv = NettyRpcEnvFactory.create(config)
-      val endPointRef: RpcEndpointRef = rpcEnv.setupEndpointRef(RpcAddress(host, port), endpointName)
+      val endPointRef: RpcEndpointRef =
+        rpcEnv.setupEndpointRef(RpcAddress(host, port), endpointName)
       log.info(s"created $endPointRef")
       runBlock(endPointRef)
     } catch {

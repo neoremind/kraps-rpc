@@ -17,6 +17,9 @@
 
 package net.neoremind.kraps.rpc.netty
 
+import java.lang
+import java.util.Map
+
 import net.neoremind.kraps.RpcConf
 import org.apache.spark.network.util.{ConfigProvider, TransportConf}
 
@@ -35,7 +38,7 @@ object KrapsTransportConf {
   /**
     * Utility for creating a [[KrapsTransportConf]] from a [[net.neoremind.kraps.RpcConf]].
     *
-    * @param conf           the [[RpcConf]]
+    * @param conf           the [[net.neoremind.kraps.RpcConf]]
     * @param module         the module name
     * @param numUsableCores if nonzero, this will restrict the server and client threads to only
     *                       use the given number of cores, rather than all of the machine's cores.
@@ -51,6 +54,8 @@ object KrapsTransportConf {
 
     new TransportConf(module, new ConfigProvider {
       override def get(name: String): String = conf.get(name)
+
+      override def getAll: lang.Iterable[Map.Entry[String, String]] = ??? //conf.getAll.toMap
     })
   }
 

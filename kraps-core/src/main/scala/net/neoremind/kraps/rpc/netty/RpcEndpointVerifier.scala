@@ -23,7 +23,7 @@ import net.neoremind.kraps.rpc.{RpcCallContext, RpcEndpoint, RpcEnv}
 import net.neoremind.kraps.util.Utils
 
 /**
-  * An [[RpcEndpoint]] for remote [[RpcEnv]]s to query if an `RpcEndpoint` exists.
+  * An [[net.neoremind.kraps.rpc.RpcEndpoint]] for remote [[net.neoremind.kraps.rpc.RpcEnv]]s to query if an `RpcEndpoint` exists.
   *
   * This is used when setting up a remote endpoint reference.
   */
